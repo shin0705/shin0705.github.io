@@ -1,24 +1,812 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>나만의 중고마켓</title>
-    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/materials.spartacodingclub.kr/easygpt/default.css">
+    <title>🎮 Fun Zone - 시간 때우기 게임 모음</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
         crossorigin="anonymous"></script>
     <style>
-        /* 꾸미기 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            border-color: #667eea;
+        }
+
+        .game-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .game-card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .btn-game {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-game:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-title {
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        /* 숫자 맞추기 게임 */
+        .number-input {
+            font-size: 1.2em;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-message {
+            font-size: 1.1em;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            min-height: 30px;
+        }
+
+        .result-hot {
+            background-color: #ffe6e6;
+            color: #d32f2f;
+        }
+
+        .result-cold {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .result-correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        /* 반응속도 테스트 */
+        .reaction-box {
+            width: 100%;
+            height: 150px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #666;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reaction-box.ready {
+            background: #667eea;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .reaction-box.click-now {
+            background: #4CAF50;
+            color: white;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .reaction-time {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        /* 색깔 맞추기 */
+        .color-game-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .color-display {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .color-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .color-btn:active {
+            transform: scale(0.95);
+        }
+
+        .color-score {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+        }
+
+        /* 주사위 게임 */
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .dice {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            animation: rollDice 0.6s ease-out;
+        }
+
+        @keyframes rollDice {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+
+        .dice.rolling {
+            animation: rollDice 0.3s infinite;
+        }
+
+        /* 명언 */
+        .quote-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quote-text {
+            font-size: 1.3em;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .quote-author {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
     </style>
 </head>
 
 <body>
-    <!-- 뼈대 잡기 -->
+    <div class="header">
+        <h1>🎮 Fun Zone</h1>
+        <p>심심할 때 즐기는 재미있는 게임 모음</p>
+    </div>
+
+    <!-- 명언 -->
+    <div class="quote-container">
+        <div class="quote-text" id="quoteText">"시작이 반이다."</div>
+        <div class="quote-author" id="quoteAuthor">- 명언</div>
+    </div>
+
+    <!-- 게임 카드 -->
+    <div class="games-container">
+        <!-- 숫자 맞추기 -->
+        <div class="game-card">
+            <h3>🔢 숫자 맞추기</h3>
+            <p>1부터 100까지의 숫자를 맞춰보세요!</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#numberGuessModal">시작하기</button>
+        </div>
+
+        <!-- 반응속도 테스트 -->
+        <div class="game-card">
+            <h3>⚡ 반응속도 테스트</h3>
+            <p>당신의 반응속도는 얼마나 빠를까요?</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#reactionTestModal">시작하기</button>
+        </div>
+
+        <!-- 색깔 맞추기 -->
+        <div class="game-card">
+            <h3>🎨 색깔 맞추기</h3>
+            <p>글씨 색깔을 찾아보세요!</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#colorGameModal">시작하기</button>
+        </div>
+
+        <!-- 주사위 게임 -->
+        <div class="game-card">
+            <h3>🎲 주사위 게임</h3>
+            <p>주사위를 굴려 운을 시험해보세요!</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#diceGameModal">시작하기</button>
+        </div>
+
+        <!-- 가위바위보 -->
+        <div class="game-card">
+            <h3>✂️ 가위바위보</h3>
+            <p>컴퓨터와 대결하세요!</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#rpsGameModal">시작하기</button>
+        </div>
+
+        <!-- 랜덤 선택기 -->
+        <div class="game-card">
+            <h3>🎯 결정해줘!</h3>
+            <p>뭘 할지 모를 때 사용하세요!</p>
+            <button class="btn-game" data-bs-toggle="modal" data-bs-target="#randomPickerModal">시작하기</button>
+        </div>
+    </div>
+
+    <!-- ============ 모달창들 ============ -->
+
+    <!-- 숫자 맞추기 모달 -->
+    <div class="modal fade" id="numberGuessModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🔢 숫자 맞추기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>1부터 100 사이의 숫자를 맞춰보세요!</p>
+                    <input type="number" id="numberInput" class="number-input" placeholder="숫자를 입력하세요" min="1" max="100">
+                    <button class="btn btn-primary w-100" onclick="guessNumber()">확인</button>
+                    <div class="result-message" id="numberResult"></div>
+                    <div class="stats">
+                        <span>시도: <strong id="numberAttempts">0</strong>회</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 반응속도 테스트 모달 -->
+    <div class="modal fade" id="reactionTestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">⚡ 반응속도 테스트</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="reactionInstruction">버튼을 클릭하여 시작하세요</p>
+                    <div class="reaction-box" id="reactionBox" onclick="startReactionTest()">
+                        준비 완료! 클릭하세요
+                    </div>
+                    <div class="reaction-time" id="reactionTime"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 색깔 맞추기 모달 -->
+    <div class="modal fade" id="colorGameModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎨 색깔 맞추기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>글씨 색깔과 같은 이름을 클릭하세요!</p>
+                    <div class="color-game-box">
+                        <div class="color-display" id="colorDisplay">빨강</div>
+                        <div class="color-buttons">
+                            <button class="color-btn" id="colorBtn1" onclick="checkColor(0)">빨강</button>
+                            <button class="color-btn" id="colorBtn2" onclick="checkColor(1)">파랑</button>
+                            <button class="color-btn" id="colorBtn3" onclick="checkColor(2)">초록</button>
+                            <button class="color-btn" id="colorBtn4" onclick="checkColor(3)">노랑</button>
+                        </div>
+                        <div class="color-score">정답: <strong id="colorScore">0</strong>개</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 주사위 게임 모달 -->
+    <div class="modal fade" id="diceGameModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎲 주사위 게임</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>주사위를 굴려보세요!</p>
+                    <div class="dice-container">
+                        <div class="dice" id="dice">🎲</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn btn-success w-100" onclick="rollDice()">주사위 굴리기</button>
+                    </div>
+                    <div class="stats">
+                        <div>현재: <strong id="diceResult">-</strong></div>
+                        <div>합계: <strong id="diceTotal">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 가위바위보 모달 -->
+    <div class="modal fade" id="rpsGameModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">✂️ 가위바위보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>가위, 바위, 보 중 하나를 선택하세요!</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 20px 0;">
+                        <button class="btn btn-info" onclick="playRPS('보')">✋ 보</button>
+                        <button class="btn btn-warning" onclick="playRPS('바위')">✊ 바위</button>
+                        <button class="btn btn-danger" onclick="playRPS('가위')">✌️ 가위</button>
+                    </div>
+                    <div class="stats">
+                        <div>당신: <strong id="rpsPlayer">-</strong></div>
+                        <div>컴퓨터: <strong id="rpsComputer">-</strong></div>
+                        <div style="margin-top: 10px; font-size: 1.2em;">결과: <strong id="rpsResult">게임을 시작하세요</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 랜덤 선택기 모달 -->
+    <div class="modal fade" id="randomPickerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎯 결정해줘!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>선택지들을 입력하고 하나를 고르게 해주세요!</p>
+                    <input type="text" id="pickerInput" class="form-control mb-2" placeholder="선택지를 입력 후 엔터 (예: 피자, 치킨, 라면)">
+                    <div id="pickerOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;"></div>
+                    <button class="btn btn-success w-100 mb-2" onclick="pickRandom()">선택해줘! 🎉</button>
+                    <div class="stats" id="pickerResult" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 숫자 맞추기 ==========
+        let numberToGuess = 0;
+        let numberAttempts = 0;
+
+        function initNumberGame() {
+            numberToGuess = Math.floor(Math.random() * 100) + 1;
+            numberAttempts = 0;
+            document.getElementById('numberResult').textContent = '';
+            document.getElementById('numberInput').value = '';
+            document.getElementById('numberAttempts').textContent = '0';
+        }
+
+        function guessNumber() {
+            const input = document.getElementById('numberInput');
+            const guess = parseInt(input.value);
+            const resultDiv = document.getElementById('numberResult');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                resultDiv.textContent = '1부터 100 사이의 숫자를 입력하세요!';
+                resultDiv.className = 'result-message';
+                return;
+            }
+
+            numberAttempts++;
+            document.getElementById('numberAttempts').textContent = numberAttempts;
+
+            if (guess === numberToGuess) {
+                resultDiv.textContent = `🎉 정답입니다! ${numberAttempts}번 만에 맞혔어요!`;
+                resultDiv.className = 'result-message result-correct';
+                setTimeout(() => initNumberGame(), 2000);
+            } else if (guess < numberToGuess) {
+                resultDiv.textContent = '🔥 더 큰 숫자입니다!';
+                resultDiv.className = 'result-message result-hot';
+            } else {
+                resultDiv.textContent = '❄️ 더 작은 숫자입니다!';
+                resultDiv.className = 'result-message result-cold';
+            }
+            input.value = '';
+        }
+
+        // 엔터 키로도 제출 가능
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('numberInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') guessNumber();
+            });
+        });
+
+        // ========== 반응속도 테스트 ==========
+        let reactionStartTime = 0;
+        let isReactionReady = false;
+
+        function startReactionTest() {
+            const box = document.getElementById('reactionBox');
+            const instruction = document.getElementById('reactionInstruction');
+
+            if (isReactionReady) return;
+
+            box.textContent = '기다리세요...';
+            box.className = 'reaction-box ready';
+            instruction.textContent = '초록색이 되면 빠르게 클릭하세요!';
+            isReactionReady = true;
+
+            const delay = Math.random() * 3000 + 1000;
+            setTimeout(() => {
+                box.textContent = '지금 클릭!';
+                box.className = 'reaction-box click-now';
+                reactionStartTime = Date.now();
+            }, delay);
+        }
+
+        function recordReaction() {
+            const box = document.getElementById('reactionBox');
+            if (!box.classList.contains('click-now')) return;
+
+            const reactionTime = Date.now() - reactionStartTime;
+            document.getElementById('reactionTime').textContent = `⏱️ 반응시간: ${reactionTime}ms`;
+            box.textContent = '준비 완료! 다시 클릭하세요';
+            box.className = 'reaction-box';
+            isReactionReady = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('reactionBox')?.addEventListener('click', recordReaction);
+        });
+
+        // ========== 색깔 맞추기 ==========
+        const colors = ['빨강', '파랑', '초록', '노랑'];
+        const colorValues = ['#FF0000', '#0000FF', '#00AA00', '#FFAA00'];
+        let currentColorIndex = 0;
+        let colorScore = 0;
+
+        function initColorGame() {
+            currentColorIndex = Math.floor(Math.random() * 4);
+            const correctColor = colors[currentColorIndex];
+            const displayColor = colors[Math.floor(Math.random() * 4)];
+
+            document.getElementById('colorDisplay').textContent = correctColor;
+            document.getElementById('colorDisplay').style.color = colorValues[colors.indexOf(displayColor)];
+
+            shuffleColorButtons();
+        }
+
+        function shuffleColorButtons() {
+            const buttons = [
+                document.getElementById('colorBtn1'),
+                document.getElementById('colorBtn2'),
+                document.getElementById('colorBtn3'),
+                document.getElementById('colorBtn4')
+            ];
+
+            const shuffled = colors.sort(() => Math.random() - 0.5);
+            buttons.forEach((btn, idx) => {
+                btn.textContent = shuffled[idx];
+                btn.style.background = colorValues[colors.indexOf(shuffled[idx])];
+            });
+        }
+
+        function checkColor(index) {
+            const buttons = [
+                document.getElementById('colorBtn1'),
+                document.getElementById('colorBtn2'),
+                document.getElementById('colorBtn3'),
+                document.getElementById('colorBtn4')
+            ];
+
+            const selected = buttons[index].textContent;
+
+            if (selected === colors[currentColorIndex]) {
+                colorScore++;
+                document.getElementById('colorScore').textContent = colorScore;
+                setTimeout(initColorGame, 500);
+            } else {
+                alert('틀렸어요! 다시 시도하세요!');
+            }
+        }
+
+        // ========== 주사위 게임 ==========
+        let diceTotal = 0;
+
+        function rollDice() {
+            const dice = document.getElementById('dice');
+            const result = Math.floor(Math.random() * 6) + 1;
+
+            dice.classList.add('rolling');
+            setTimeout(() => {
+                dice.classList.remove('rolling');
+                dice.textContent = ['🥐', '🎲', '🎲', '🎲', '🎲', '🎲'][result];
+                document.getElementById('diceResult').textContent = result;
+                diceTotal += result;
+                document.getElementById('diceTotal').textContent = diceTotal;
+            }, 600);
+        }
+
+        // ========== 가위바위보 ==========
+        const choices = ['보', '바위', '가위'];
+        const choiceEmoji = ['✋', '✊', '✌️'];
+
+        function playRPS(playerChoice) {
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            const playerIdx = choices.indexOf(playerChoice);
+            const computerIdx = choices.indexOf(computerChoice);
+
+            document.getElementById('rpsPlayer').textContent = choiceEmoji[playerIdx] + ' ' + playerChoice;
+            document.getElementById('rpsComputer').textContent = choiceEmoji[computerIdx] + ' ' + computerChoice;
+
+            let result;
+            if (playerIdx === computerIdx) {
+                result = '무승부!';
+            } else if ((playerIdx + 1) % 3 === computerIdx) {
+                result = '🎉 승리!';
+            } else {
+                result = '💔 패배...';
+            }
+
+            document.getElementById('rpsResult').textContent = result;
+        }
+
+        // ========== 랜덤 선택기 ==========
+        let pickerOptions = [];
+
+        function addPickerOption() {
+            const input = document.getElementById('pickerInput');
+            if (input.value.trim()) {
+                pickerOptions.push(input.value.trim());
+                renderPickerOptions();
+                input.value = '';
+            }
+        }
+
+        function renderPickerOptions() {
+            const container = document.getElementById('pickerOptions');
+            container.innerHTML = '';
+            pickerOptions.forEach((option, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-secondary';
+                btn.textContent = option + ' ✕';
+                btn.onclick = () => {
+                    pickerOptions.splice(idx, 1);
+                    renderPickerOptions();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function pickRandom() {
+            if (pickerOptions.length === 0) {
+                alert('선택지를 먼저 입력하세요!');
+                return;
+            }
+            const result = pickerOptions[Math.floor(Math.random() * pickerOptions.length)];
+            document.getElementById('pickerResult').textContent = `🎉 선택된 것: ${result}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pickerInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addPickerOption();
+            });
+        });
+
+        // ========== 명언 ==========
+        const quotes = [
+            { text: '인생은 자전거를 타는 것과 같다. 계속 움직여야 균형을 유지할 수 있다.', author: '알베르트 아인슈타인' },
+            { text: '도전 없이는 성장이 없다.', author: '알려지지 않음' },
+            { text: '가장 좋은 시간은 지금이다.', author: '톨스토이' },
+            { text: '실패는 성공의 어머니다.', author: '톰 왓슨' },
+            { text: '꿈을 이루는 방법은 하나뿐이다. 깨어나는 것이다.', author: '폴 발레리' },
+            { text: '행복은 내면에서부터 온다.', author: '플라톤' },
+            { text: '세상을 바꾸는 가장 쉬운 방법은 자신을 바꾸는 것이다.', author: '간디' },
+            { text: '어제는 역사, 내일은 미스터리, 하지만 오늘은 선물이다.', author: '마스터 우기' },
+            { text: '최고의 시간은 지금이다. 최고의 사람은 당신이다.', author: '알려지지 않음' },
+            { text: '할 수 있다는 것을 믿는 자만이 할 수 있다.', author: '소포클레스' }
+        ];
+
+        function showRandomQuote() {
+            const quote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quoteText').textContent = `"${quote.text}"`;
+            document.getElementById('quoteAuthor').textContent = `- ${quote.author}`;
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            showRandomQuote();
+            setInterval(showRandomQuote, 10000);
+            initNumberGame();
+            initColorGame();
+        });
+
+        // 모달 열릴 때 게임 초기화
+        const numberGuessModal = document.getElementById('numberGuessModal');
+        const colorGameModal = document.getElementById('colorGameModal');
+        const reactionTestModal = document.getElementById('reactionTestModal');
+        const randomPickerModal = document.getElementById('randomPickerModal');
+
+        if (numberGuessModal) {
+            numberGuessModal.addEventListener('show.bs.modal', initNumberGame);
+        }
+        if (colorGameModal) {
+            colorGameModal.addEventListener('show.bs.modal', initColorGame);
+        }
+        if (reactionTestModal) {
+            reactionTestModal.addEventListener('show.bs.modal', function() {
+                document.getElementById('reactionTime').textContent = '';
+            });
+        }
+        if (randomPickerModal) {
+            randomPickerModal.addEventListener('show.bs.modal', function() {
+                pickerOptions = [];
+                document.getElementById('pickerOptions').innerHTML = '';
+                document.getElementById('pickerResult').textContent = '';
+            });
+        }
+    </script>
 </body>
 
 </html>
