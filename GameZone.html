@@ -1,340 +1,1047 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fun Zone Mega - 15 Games</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #8b5cf6;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg-1: #050816;
+      --bg-2: #0a0f25;
+      --bg-3: #130828;
+      --panel: rgba(15, 18, 45, 0.72);
+      --panel-strong: rgba(19, 22, 54, 0.92);
+      --card: rgba(13, 16, 42, 0.92);
+      --line: rgba(255,255,255,0.08);
+      --text: #f8f7ff;
+      --muted: #aab4d4;
+      --pink: #ff67d8;
+      --violet: #9d6bff;
+      --blue: #54b8ff;
+      --green: #63f6b1;
+      --yellow: #ffd85b;
+      --orange: #ff9b54;
+      --danger: #ff6c7c;
+      --shadow-deep: 0 20px 50px rgba(0,0,0,0.45);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
     }
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Pretendard',system-ui,sans-serif; }
-    body { background:var(--bg); color:var(--text); padding:40px 20px; min-height:100vh; }
-    header { text-align:center; margin-bottom:40px; }
-    header h1 { font-size:2.5rem; margin-bottom:10px; background:linear-gradient(to right,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: glowText 3s infinite alternate; }
-    @keyframes glowText { from{filter:brightness(1);} to{filter:brightness(1.5);} }
-    header p { color:var(--text-muted); }
 
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; max-width:1100px; margin:auto; }
-    .card { background:var(--card-bg); padding:25px; border-radius:20px; text-align:center; transition:.3s; border:1px solid rgba(255,255,255,0.05); cursor:pointer; opacity:0; transform:translateY(20px); animation: cardIn .6s forwards; }
-    @keyframes cardIn { to{opacity:1; transform:translateY(0);} }
-    .card:hover { transform:scale(1.05); background:#2d3a4f; border-color:var(--accent); box-shadow:0 10px 30px rgba(0,0,0,0.3); }
-    .card .icon { font-size:2rem; margin-bottom:10px; display:block; }
-    .card h3 { font-size:1.1rem; font-weight:600; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
 
-    #gameOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:none; justify-content:center; align-items:center; z-index:1000; backdrop-filter:blur(10px); }
-    #modalContent { background:var(--card-bg); width:90%; max-width:500px; padding:40px; border-radius:30px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.5); animation: modalIn .4s ease; }
-    @keyframes modalIn { from{opacity:0; transform:scale(0.8);} to{opacity:1; transform:scale(1);} }
-    .close-btn { position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; transition:.2s; }
-    .close-btn:hover { transform:rotate(90deg); }
+    html, body {
+      min-height: 100%;
+    }
 
-    .game-display { min-height:150px; display:flex; flex-direction:column; justify-content:center; align-items:center; margin-bottom:20px; }
-    .big-text { font-size:3rem; font-weight:800; margin-bottom:20px; animation: popIn .5s ease; }
-    @keyframes popIn { from{opacity:0; transform:scale(0.5);} to{opacity:1; transform:scale(1);} }
+    body {
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.18), transparent 22%),
+        radial-gradient(circle at 80% 15%, rgba(255, 103, 216, 0.14), transparent 18%),
+        radial-gradient(circle at 78% 72%, rgba(84, 184, 255, 0.12), transparent 18%),
+        radial-gradient(circle at 20% 80%, rgba(110, 76, 255, 0.10), transparent 20%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-    input { background:#0f172a; border:1px solid #334155; color:white; padding:12px; border-radius:10px; width:100%; margin-bottom:15px; text-align:center; font-size:1.2rem; transition:.3s; }
-    input:focus { border-color:var(--accent); outline:none; transform:scale(1.05); }
-    .action-btn { background:var(--accent); color:white; border:none; padding:12px 25px; border-radius:12px; font-weight:bold; cursor:pointer; width:100%; transition:.2s; }
-    .action-btn:hover { opacity:.9; transform:translateY(-2px); }
-    .action-btn:active { transform:scale(.95) rotate(-2deg); }
-    .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    .result-msg { margin-top:15px; font-weight:bold; color:#10b981; animation: fadeBounce .6s ease; }
-    @keyframes fadeBounce { 0%{opacity:0; transform:translateY(10px);} 50%{opacity:1; transform:translateY(-5px);} 100%{transform:translateY(0);} }
-	
-	.dice {
-	  width:100px;
-	  height:100px;
-	  background:white;
-	  border-radius:10px;
-	  position:relative;
-	  margin:auto;
-	}
-	@keyframes spinDice {
-	  0%   { transform: rotate(0deg); }
-	  100% { transform: rotate(720deg); }
-	}
-	
-	@keyframes flipCoin {
-	  0% { transform:rotateY(0deg); }
-	  100% { transform:rotateY(720deg); }
-	}
+    body::before {
+      background:
+        radial-gradient(2px 2px at 10% 14%, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(2px 2px at 22% 75%, rgba(255,255,255,.5), transparent 60%),
+        radial-gradient(2px 2px at 76% 18%, rgba(255,255,255,.65), transparent 60%),
+        radial-gradient(2px 2px at 88% 60%, rgba(255,255,255,.45), transparent 60%),
+        radial-gradient(2px 2px at 55% 9%, rgba(255,255,255,.4), transparent 60%);
+      opacity: .6;
+    }
+
+    body::after {
+      background:
+        linear-gradient(120deg, transparent 0 28%, rgba(255,103,216,.11) 29%, transparent 31%) no-repeat,
+        linear-gradient(120deg, transparent 0 65%, rgba(84,184,255,.10) 66%, transparent 68%) no-repeat,
+        linear-gradient(120deg, transparent 0 82%, rgba(157,107,255,.10) 83%, transparent 85%) no-repeat;
+      background-size: 100% 100%;
+      opacity: .8;
+      mix-blend-mode: screen;
+    }
+
+    .app-shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 6px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 34px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+    }
+
+    .brand .logo {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 12px rgba(255, 103, 216, 0.5));
+    }
+
+    .brand .name {
+      background: linear-gradient(90deg, #ff7adf 0%, #db7fff 35%, #74c8ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(155, 120, 255, 0.18);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      color: #eaefff;
+      font-size: 0.95rem;
+    }
+
+    .top-actions .item {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: rgba(255,255,255,0.9);
+      opacity: 0.9;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(33, 39, 96, 0.85), rgba(20, 24, 66, 0.92));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 10px 25px rgba(0,0,0,0.25),
+        0 0 20px rgba(143, 92, 255, 0.14);
+      color: #d7e5ff;
+      letter-spacing: 0.28em;
+      font-size: 0.76rem;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      font-style: italic;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ff7bd9 0%, #db74ff 35%, #68c3ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow:
+        0 0 20px rgba(255, 103, 216, 0.18),
+        0 0 30px rgba(84, 184, 255, 0.08);
+      animation: glowText 3s infinite alternate;
+    }
+
+    .hero .subtitle {
+      color: rgba(255,255,255,0.88);
+      font-size: clamp(1rem, 2vw, 1.3rem);
+    }
+
+    @keyframes glowText {
+      from { filter: brightness(1); }
+      to { filter: brightness(1.22); }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+      margin: 26px auto 28px;
+    }
+
+    .card {
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(16, 20, 55, 0.92) 0%, rgba(10, 13, 38, 0.96) 100%);
+      border-radius: 22px;
+      text-align: center;
+      padding: 22px 16px 16px;
+      min-height: 150px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardIn .6s forwards;
+      transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 12px 26px rgba(0,0,0,0.32);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent) 90%, white 10%),
+          rgba(255,255,255,0.02) 35%,
+          color-mix(in srgb, var(--accent) 70%, #6a3cff 30%) 100%);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: .85;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: auto 10% -25px 10%;
+      height: 50px;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 45%, transparent 55%) 0%, transparent 70%);
+      filter: blur(18px);
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    @keyframes cardIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow:
+        0 16px 34px rgba(0,0,0,0.38),
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 0 26px color-mix(in srgb, var(--accent) 28%, transparent 72%);
+      background:
+        linear-gradient(180deg, rgba(22, 28, 70, 0.98) 0%, rgba(12, 16, 46, 0.98) 100%);
+    }
+
+    .card .icon {
+      display: block;
+      font-size: 2.35rem;
+      line-height: 1;
+      margin-bottom: 14px;
+      filter: drop-shadow(0 0 12px color-mix(in srgb, var(--accent) 45%, transparent 55%));
+    }
+
+    .card h3 {
+      font-size: 1.08rem;
+      margin-bottom: 14px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .play-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      height: 34px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #f7fbff;
+      background:
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--accent) 18%, rgba(255,255,255,0.05) 82%),
+          rgba(255,255,255,0.03));
+      border: 1px solid color-mix(in srgb, var(--accent) 62%, rgba(255,255,255,0.12) 38%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 0 16px color-mix(in srgb, var(--accent) 22%, transparent 78%);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      max-width: 820px;
+      margin: 26px auto 0;
+      background: linear-gradient(180deg, rgba(14,18,48,.9), rgba(8,11,34,.9));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 12px 30px rgba(0,0,0,0.28);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 20px;
+      position: relative;
+    }
+
+    .stat:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 18%;
+      width: 1px;
+      height: 64%;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .stat-icon {
+      font-size: 1.35rem;
+      filter: drop-shadow(0 0 12px rgba(255,255,255,0.18));
+    }
+
+    .stat-text strong {
+      display: block;
+      font-size: 1.2rem;
+      line-height: 1.1;
+    }
+
+    .stat-text span {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    #gameOverlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(123, 72, 255, 0.14), transparent 24%),
+        rgba(5, 8, 22, 0.84);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(12px);
+      padding: 20px;
+    }
+
+    #modalContent {
+      width: 100%;
+      max-width: 560px;
+      padding: 34px 28px 28px;
+      border-radius: 30px;
+      position: relative;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(20, 24, 63, 0.96), rgba(10, 14, 40, 0.98));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 24px 60px rgba(0,0,0,0.52),
+        0 0 35px rgba(143, 92, 255, 0.12);
+      animation: modalIn .4s ease;
+    }
+
+    #modalContent::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04), rgba(120,110,255,.3));
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.82); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .close-btn:hover {
+      transform: rotate(90deg) scale(1.06);
+      color: #fff;
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    #modalTitle {
+      margin-bottom: 22px;
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(90deg, #ff84de, #7cc9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .game-display {
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 18px;
+      color: #eef4ff;
+    }
+
+    .big-text {
+      font-size: clamp(2.2rem, 8vw, 3.2rem);
+      font-weight: 900;
+      margin-bottom: 18px;
+      letter-spacing: -0.04em;
+      animation: popIn .5s ease;
+      text-shadow: 0 0 18px rgba(255,255,255,0.08);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #controls {
+      width: 100%;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      background: rgba(8, 12, 34, 0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white;
+      padding: 14px 16px;
+      border-radius: 14px;
+      width: 100%;
+      margin-bottom: 14px;
+      text-align: center;
+      font-size: 1.05rem;
+      transition: .25s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 12px 0 16px;
+      accent-color: #9d6bff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(157, 107, 255, 0.85);
+      box-shadow: 0 0 0 4px rgba(157, 107, 255, 0.13);
+      transform: scale(1.02);
+    }
+
+    .action-btn {
+      background: linear-gradient(90deg, #8f5fff, #b76cff);
+      color: white;
+      border: 0;
+      padding: 13px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      transition: .2s;
+      box-shadow:
+        0 10px 22px rgba(143,95,255,.28),
+        inset 0 1px 0 rgba(255,255,255,.16);
+    }
+
+    .action-btn:hover {
+      opacity: .96;
+      transform: translateY(-2px);
+    }
+
+    .action-btn:active {
+      transform: scale(.96) rotate(-1deg);
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .result-msg {
+      margin-top: 16px;
+      font-weight: 800;
+      color: #7ef2c0;
+      min-height: 24px;
+      animation: fadeBounce .6s ease;
+    }
+
+    @keyframes fadeBounce {
+      0% { opacity: 0; transform: translateY(10px); }
+      50% { opacity: 1; transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+
+    .dice {
+      width: 110px;
+      height: 110px;
+      background: linear-gradient(180deg, #ffffff, #eef3ff);
+      border-radius: 18px;
+      position: relative;
+      margin: auto;
+      box-shadow:
+        0 15px 32px rgba(0,0,0,.3),
+        inset 0 -4px 10px rgba(0,0,0,.08);
+    }
+
+    @keyframes spinDice {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(720deg); }
+    }
+
+    @keyframes flipCoin {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(720deg); }
+    }
+
+    .color-dot {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 8px;
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.16);
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .color-dot:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(255,255,255,.15);
+    }
+
+    .lotto-wrap {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lotto-ball {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(180deg, #ffffff, #e8efff);
+      color: #111827;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 -2px 4px rgba(0,0,0,.08);
+      animation: popIn .5s;
+    }
+
+    .helper-text {
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 920px) {
+      .topbar {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .stats-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .stat:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+
+      .brand {
+        font-size: 1.5rem;
+      }
+
+      .top-actions {
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 136px;
+        padding: 18px 12px 14px;
+      }
+
+      #modalContent {
+        padding: 28px 18px 22px;
+      }
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>🎮 Fun Zone Mega</h1>
-  <p>심심할 틈이 없는 15가지 미니게임 파크</p>
-</header>
-<div class="grid" id="grid"></div>
-<div id="gameOverlay">
-  <div id="modalContent">
-    <button class="close-btn" onclick="closeGame()">✕</button>
-    <h2 id="modalTitle" style="margin-bottom:25px;">게임 제목</h2>
-    <div class="game-display" id="display"></div>
-    <div id="controls"></div>
-    <div id="feedback" class="result-msg"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">🎮</span>
+        <span class="name">Fun Zone Mega</span>
+      </div>
+      <div class="top-actions">
+        <div class="item">🏆 <span>랭킹</span></div>
+        <div class="item">♡ <span>즐겨찾기</span></div>
+        <div class="item">⚙ <span>설정</span></div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-badge">PLAY • FUN • CHALLENGE</div>
+      <h1>Fun Zone Mega</h1>
+      <p class="subtitle">심심할 틈이 없는 15가지 미니게임 파크</p>
+    </section>
+
+    <div class="grid" id="grid"></div>
+
+    <section class="stats-bar">
+      <div class="stat">
+        <div class="stat-icon" style="color:#ff7adf;">🎮</div>
+        <div class="stat-text">
+          <strong>15</strong>
+          <span>미니게임</span>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon" style="color:#ff8a62;">🔥</div>
+        <div class="stat-text">
+          <strong>무제한</strong>
+          <span>플레이</span>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon" style="color:#ffd85b;">⭐</div>
+        <div class="stat-text">
+          <strong>100%</strong>
+          <span>재미보장</span>
+        </div>
+      </div>
+    </section>
   </div>
-</div>
 
-<script>
-const games = [
-  {n:"스트룹 테스트",i:"🎨"}, {n:"암산왕",i:"🧮"}, {n:"카드 기억",i:"🃏"},
-  {n:"숫자 맞추기",i:"🔢"}, {n:"반응속도",i:"⚡"}, {n:"타자 연습",i:"⌨️"},
-  {n:"무한 클릭",i:"🖱️"}, {n:"10초 챌린지",i:"🕒"}, {n:"색깔 찾기",i:"🌈"},
-  {n:"순서 기억",i:"🍎"}, {n:"행운 주사위",i:"🎲"}, {n:"가위바위보",i:"✌️"},
-  {n:"동전 던지기",i:"🪙"}, {n:"눈대중 측정",i:"📏"}, {n:"로또 번호",i:"🍀"}
-];
+  <div id="gameOverlay">
+    <div id="modalContent">
+      <button class="close-btn" onclick="closeGame()">✕</button>
+      <h2 id="modalTitle">게임 제목</h2>
+      <div class="game-display" id="display"></div>
+      <div id="controls"></div>
+      <div id="feedback" class="result-msg"></div>
+    </div>
+  </div>
 
-const grid=document.getElementById("grid"),
-overlay=document.getElementById("gameOverlay"),
-display=document.getElementById("display"),
-controls=document.getElementById("controls"),
-feedback=document.getElementById("feedback");
+  <script>
+    const games = [
+      { n: "스트룹 테스트", i: "🎨", c: "#ff7adf" },
+      { n: "암산왕", i: "🧮", c: "#9b7dff" },
+      { n: "카드 기억", i: "🃏", c: "#63b8ff" },
+      { n: "숫자 맞추기", i: "🔢", c: "#58b7ff" },
+      { n: "반응속도", i: "⚡", c: "#ff8f58" },
+      { n: "타자 연습", i: "⌨️", c: "#77b8ff" },
+      { n: "무한 클릭", i: "🖱️", c: "#67f0b0" },
+      { n: "10초 챌린지", i: "⏱️", c: "#ff7e66" },
+      { n: "색깔 찾기", i: "🌈", c: "#ff62d6" },
+      { n: "순서 기억", i: "🍎", c: "#67f0b0" },
+      { n: "행운 주사위", i: "🎲", c: "#a470ff" },
+      { n: "가위바위보", i: "✌️", c: "#ff795c" },
+      { n: "동전 던지기", i: "🪙", c: "#ffd85b" },
+      { n: "눈대중 측정", i: "📏", c: "#58c4ff" },
+      { n: "로또 번호", i: "🍀", c: "#66f3a8" }
+    ];
 
-games.forEach((g,idx)=>{
-  const div=document.createElement("div");
-  div.className="card";
-  div.innerHTML=`<span class="icon">${g.i}</span><h3>${g.n}</h3>`;
-  div.onclick=()=>play(idx);
-  grid.appendChild(div);
-});
+    const grid = document.getElementById("grid"),
+      overlay = document.getElementById("gameOverlay"),
+      display = document.getElementById("display"),
+      controls = document.getElementById("controls"),
+      feedback = document.getElementById("feedback");
 
-function closeGame(){overlay.style.display="none";}
-
-function addEnterListener(inputId, callback){
-  const input=document.getElementById(inputId);
-  if(input){
-    input.addEventListener("keydown",e=>{
-      if(e.key==="Enter"){callback();}
+    games.forEach((g, idx) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.style.setProperty("--accent", g.c);
+      div.style.animationDelay = `${idx * 0.04}s`;
+      div.innerHTML = `
+        <span class="icon">${g.i}</span>
+        <h3>${g.n}</h3>
+        <div class="play-pill">PLAY</div>
+      `;
+      div.onclick = () => play(idx);
+      grid.appendChild(div);
     });
-  }
-}
 
-function play(idx){
-  overlay.style.display="flex";
-  document.getElementById("modalTitle").innerText=games[idx].n;
-  feedback.innerText="";controls.innerHTML="";display.innerHTML="";
-  switch(idx){
-    case 0: // 스트룹 테스트
-      const colors=[{en:"red",ko:"빨강"},{en:"blue",ko:"파랑"},{en:"green",ko:"초록"},{en:"yellow",ko:"노랑"}];
-      const textObj=colors[Math.floor(Math.random()*4)],colorObj=colors[Math.floor(Math.random()*4)];
-      display.innerHTML=`<div class="big-text" style="color:${colorObj.en}">${textObj.ko}</div>`;
-      controls.innerHTML=`<div class="btn-group">`+colors.map(c=>`<button class="action-btn" onclick="checkStroop('${c.ko}','${colorObj.ko}')">${c.ko}</button>`).join('')+`</div>`;
-      window.checkStroop=(choice,ans)=>{feedback.innerText=choice===ans?"✅ 정답!":"❌ 틀렸어요 (답:"+ans+")";setTimeout(()=>play(0),1000);};
-      break;
+    function closeGame() {
+      overlay.style.display = "none";
+    }
 
-    case 1: // 암산왕
-      let a=Math.floor(Math.random()*50),b=Math.floor(Math.random()*50);
-      display.innerHTML=`<div class="big-text">${a}+${b}</div>`;
-      controls.innerHTML=`<input type="number" id="ans"><button class="action-btn" onclick="checkCalc(${a+b})">확인</button>`;
-      window.checkCalc=(ans)=>{const val=document.getElementById("ans").value;feedback.innerText=val==ans?"✅ 정답!":"❌ 오답!";setTimeout(()=>play(1),1000);};
-      addEnterListener("ans",()=>checkCalc(a+b));
-      break;
+    function addEnterListener(inputId, callback) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.addEventListener("keydown", e => {
+          if (e.key === "Enter") callback();
+        });
+      }
+    }
 
-    case 2: // 카드 기억
-      let card=Math.floor(Math.random()*10)+1;
-      display.innerHTML=`<p>카드를 기억하세요!</p><div class="big-text">${card}</div>`;
-      setTimeout(()=>{display.innerHTML=`<p>카드가 사라졌습니다. 숫자를 입력하세요!</p>`;controls.innerHTML=`<input type="number" id="mem"><button class="action-btn" onclick="checkMem(${card})">확인</button>`;addEnterListener("mem",()=>checkMem(card));},1500);
-      window.checkMem=(ans)=>{const val=document.getElementById("mem").value;feedback.innerText=val==ans?"✅ 맞췄습니다!":"❌ 틀렸습니다!";setTimeout(()=>play(2),1000);};
-      break;
-
-    case 3: // 숫자 맞추기
-      if(!window.targetNum)window.targetNum=Math.floor(Math.random()*100)+1;
-      display.innerHTML=`<div>1~100 사이의 숫자를 맞춰보세요</div>`;
-      controls.innerHTML=`<input type="number" id="numIn"><button class="action-btn" onclick="checkGuess()">입력</button>`;
-      window.checkGuess=()=>{const g=document.getElementById("numIn").value;if(g==window.targetNum){feedback.innerText="🎊 정답입니다!";window.targetNum=null;}else{feedback.innerText=g>window.targetNum?"DOWN ↓":"UP ↑";}};
-      addEnterListener("numIn",checkGuess);
-      break;
-
-    case 4: // 반응속도
-      display.innerHTML=`<div id="box" style="width:100px;height:100px;background:red;border-radius:20px;animation:popIn .5s;"></div><p>초록색이 되면 클릭!</p>`;
-      const delay=2000+Math.random()*3000;
-      setTimeout(()=>{const box=document.getElementById("box");box.style.background="#10b981";const start=Date.now();box.onclick=()=>{feedback.innerText=`기록:${Date.now()-start}ms`;box.onclick=null;};},delay);
-      break;
-
-    case 5: // 타자 연습
-	  const words = [
-		"코딩","자바스크립트","게임","도전","프로그래밍","알고리즘","데이터","변수","함수","객체",
-		"클래스","조건문","반복문","배열","이벤트","브라우저","인터넷","웹","서버","클라이언트",
-		"인공지능","머신러닝","딥러닝","네트워크","보안","데이터베이스","SQL","HTML","CSS","React",
-		"Node","Python","Java","C언어","C++","Rust","Go","Swift","Kotlin","Android","iOS"
-	  ];
-	  const word = words[Math.floor(Math.random()*words.length)];
-	  display.innerHTML = `<p>다음 단어를 입력하세요:</p><div class="big-text">${word}</div>`;
-	  controls.innerHTML = `<input type="text" id="typeIn"><button class="action-btn" onclick="checkType('${word}')">확인</button>`;
-	  const input = document.getElementById("typeIn");
-	  input.focus(); // 자동 포커스
-	  window.checkType = (ans) => {
-		const val = input.value;
-		feedback.innerText = val === ans ? "✅ 정확합니다!" : "❌ 틀렸습니다!";
-		setTimeout(()=>play(5),1000);
-	  };
-	  addEnterListener("typeIn",()=>checkType(word));
-	  break;
-
-    case 6: // 무한 클릭
-      if(!window.clickCount)window.clickCount=0;
-      display.innerHTML=`<p>버튼을 최대한 많이 클릭하세요!</p><p>현재 클릭 수:${window.clickCount}</p>`;
-      controls.innerHTML=`<button class="action-btn" onclick="clickCount++;play(6)">클릭!</button>`;
-      break;
-
-    case 7: // 10초 챌린지
-      display.innerHTML=`<p>10초라고 생각되면 버튼을 누르세요!</p>`;
-      controls.innerHTML=`<button class="action-btn" onclick="startTen()">시작</button>`;
-      window.startTen=()=>{const start=Date.now();controls.innerHTML=`<button class="action-btn" onclick="endTen(${start})">지금!</button>`;};
-      window.endTen=(start)=>{const diff=(Date.now()-start)/1000;feedback.innerText=`⏱ 기록:${diff.toFixed(2)}초`;};
-      break;
-
-    case 8: // 색깔 찾기
-	  // 색상 배열 (영문 코드 + 한글 이름)
-	  const allColors = [
-		{en:"red", ko:"빨강"},
-		{en:"blue", ko:"파랑"},
-		{en:"green", ko:"초록"},
-		{en:"yellow", ko:"노랑"},
-		{en:"purple", ko:"보라"},
-		{en:"orange", ko:"주황"},
-		{en:"pink", ko:"분홍"},
-		{en:"brown", ko:"갈색"},
-		{en:"cyan", ko:"청록"},
-		{en:"lime", ko:"연두"},
-		{en:"magenta", ko:"자홍"},
-		{en:"teal", ko:"청색"}
-	  ];
-
-	  // 랜덤으로 10개 뽑기 (중복 없음)
-	  let shuffled = allColors.sort(()=>0.5-Math.random());
-	  let chosen = shuffled.slice(0,10);
-
-	  // 목표 색 하나 선택
-	  const target = chosen[Math.floor(Math.random()*chosen.length)];
-	  display.innerHTML = `<p>${target.ko} 색을 찾으세요!</p>`;
-	  controls.innerHTML = "";
-
-	  // 랜덤 위치 배치
-	  chosen.forEach(c=>{
-		const box=document.createElement("div");
-		box.style.width="50px";
-		box.style.height="50px";
-		box.style.borderRadius="50%";
-		box.style.background=c.en; // 실제 색상은 영어 코드
-		box.style.display="inline-block";
-		box.style.margin="8px";
-		box.style.cursor="pointer";
-		box.onclick=()=>{
-		  feedback.innerText=c.ko===target.ko?"✅ 정답!":"❌ 오답!";
-		  setTimeout(()=>play(8),1000);
-		};
-		controls.appendChild(box);
-	  });
-	  break;
-
-    // 순서 기억 개선
-	case 9:
-	  const seq=[Math.floor(Math.random()*9)+1,Math.floor(Math.random()*9)+1,Math.floor(Math.random()*9)+1];
-	  display.innerHTML=`<p>순서를 기억하세요!</p><div class="big-text">${seq.join(" - ")}</div>`;
-	  setTimeout(()=>{
-		display.innerHTML=`<p>숫자를 입력하세요 (예: 123)</p>`;
-		controls.innerHTML=`<input type="text" id="seqIn"><button class="action-btn" onclick="checkSeq('${seq.join("")}')">확인</button>`;
-		addEnterListener("seqIn",()=>checkSeq(seq.join("")));
-	  },2000);
-	  window.checkSeq=(ans)=>{
-		const val=document.getElementById("seqIn").value;
-		feedback.innerText=val===ans?"✅ 맞췄습니다!":"❌ 틀렸습니다!";
-		setTimeout(()=>play(9),1000);
-	  };
-	  break;
-
-    case 10: // 행운 주사위
-	  display.innerHTML = `<div id="dice" class="dice"></div>`;
-	  controls.innerHTML = "";
-	  document.getElementById("dice").style.animation = "spinDice 1s";
-
-	  setTimeout(()=>{
-		const dice=Math.floor(Math.random()*6)+1;
-		renderDiceFace(dice);
-		controls.innerHTML=`<button class="action-btn" onclick="play(10)">다시 굴리기</button>`;
-	  },1000);
-	  break;
-
-	// 주사위 눈 렌더링 함수
-	function renderDiceFace(num){
-	  const dice=document.getElementById("dice");
-	  dice.innerHTML="";
-	  const positions={
-		1:[[50,50]],
-		2:[[20,20],[80,80]],
-		3:[[20,20],[50,50],[80,80]],
-		4:[[20,20],[20,80],[80,20],[80,80]],
-		5:[[20,20],[20,80],[80,20],[80,80],[50,50]],
-		6:[[20,20],[20,50],[20,80],[80,20],[80,50],[80,80]]
-	  };
-	  positions[num].forEach(([x,y])=>{
-		const dot=document.createElement("div");
-		dot.style.width="15px";
-		dot.style.height="15px";
-		dot.style.background="black";
-		dot.style.borderRadius="50%";
-		dot.style.position="absolute";
-		dot.style.left=`${x-7}px`;
-		dot.style.top=`${y-7}px`;
-		dice.appendChild(dot);
-	  });
-	}
-
-    case 11: // 가위바위보
-      const choices=["가위","바위","보"];
-      display.innerHTML=`<p>선택하세요!</p>`;
-      controls.innerHTML=choices.map(c=>`<button class="action-btn" onclick="playRPS('${c}')">${c}</button>`).join('');
-      window.playRPS=(userChoice)=>{
-        const compChoice=choices[Math.floor(Math.random()*3)];
-        let result="";
-        if(userChoice===compChoice) result="🤝 비겼습니다!";
-        else if((userChoice==="가위"&&compChoice==="보")||(userChoice==="바위"&&compChoice==="가위")||(userChoice==="보"&&compChoice==="바위")) result="🎉 이겼습니다!";
-        else result="😢 졌습니다!";
-        feedback.innerText=`당신:${userChoice} / 컴퓨터:${compChoice} → ${result}`;
+    function renderDiceFace(num) {
+      const dice = document.getElementById("dice");
+      dice.innerHTML = "";
+      const positions = {
+        1: [[50, 50]],
+        2: [[20, 20], [80, 80]],
+        3: [[20, 20], [50, 50], [80, 80]],
+        4: [[20, 20], [20, 80], [80, 20], [80, 80]],
+        5: [[20, 20], [20, 80], [80, 20], [80, 80], [50, 50]],
+        6: [[20, 20], [20, 50], [20, 80], [80, 20], [80, 50], [80, 80]]
       };
-      break;
+      positions[num].forEach(([x, y]) => {
+        const dot = document.createElement("div");
+        dot.style.width = "15px";
+        dot.style.height = "15px";
+        dot.style.background = "black";
+        dot.style.borderRadius = "50%";
+        dot.style.position = "absolute";
+        dot.style.left = `${x - 7}px`;
+        dot.style.top = `${y - 7}px`;
+        dice.appendChild(dot);
+      });
+    }
 
-    case 12: // 동전 던지기
-	  display.innerHTML = `<div id="coin" style="width:80px;height:80px;border-radius:50%;background:gold;display:flex;align-items:center;justify-content:center;font-size:1.5rem;animation:flipCoin 1s;"></div>`;
-	  controls.innerHTML = "";
-	  setTimeout(()=>{
-		const coin=Math.random()<0.5?"앞면":"뒷면";
-		document.getElementById("coin").innerText = coin;
-		controls.innerHTML=`<button class="action-btn" onclick="play(12)">다시 던지기</button>`;
-	  },1000);
-	  break;
+    function play(idx) {
+      overlay.style.display = "flex";
+      document.getElementById("modalTitle").innerText = games[idx].n;
+      feedback.innerText = "";
+      controls.innerHTML = "";
+      display.innerHTML = "";
 
-    case 13: // 눈대중 측정
-	  const targetLen=Math.floor(Math.random()*100)+50; // 50~150px 랜덤
-	  display.innerHTML=`<p>${targetLen}px 길이를 맞춰보세요!</p><input type="range" min="0" max="200" value="0" id="range"><button class="action-btn" onclick="checkRange(${targetLen})">확인</button>`;
-	  window.checkRange=(target)=>{
-		const val=document.getElementById("range").value;
-		if(parseInt(val)===target){
-		  feedback.innerText=`🎯 ${target}px 성공!`;
-		} else {
-		  feedback.innerText=`❌ 빗나갔습니다! (입력:${val}px, 목표:${target}px)`;
-		}
-	  };
-	  break;
+      switch (idx) {
+        case 0: // 스트룹 테스트
+          const colors = [
+            { en: "red", ko: "빨강" },
+            { en: "blue", ko: "파랑" },
+            { en: "green", ko: "초록" },
+            { en: "yellow", ko: "노랑" }
+          ];
+          const textObj = colors[Math.floor(Math.random() * 4)];
+          const colorObj = colors[Math.floor(Math.random() * 4)];
+          display.innerHTML = `<div class="big-text" style="color:${colorObj.en}">${textObj.ko}</div>`;
+          controls.innerHTML = `<div class="btn-group">` +
+            colors.map(c => `<button class="action-btn" onclick="checkStroop('${c.ko}','${colorObj.ko}')">${c.ko}</button>`).join('') +
+            `</div>`;
+          window.checkStroop = (choice, ans) => {
+            feedback.innerText = choice === ans ? "✅ 정답!" : `❌ 틀렸어요 (답: ${ans})`;
+            setTimeout(() => play(0), 1000);
+          };
+          break;
 
-    case 14: // 로또 번호
-      let nums=[];
-      while(nums.length<6){let n=Math.floor(Math.random()*45)+1;if(!nums.includes(n))nums.push(n);}
-      nums.sort((a,b)=>a-b);
-            display.innerHTML=`<div style="display:flex;gap:10px;">`+
-        nums.map(n=>`<div style="width:40px;height:40px;background:white;color:black;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;animation:popIn .5s;">${n}</div>`).join('')+
-        `</div>`;
-      controls.innerHTML=`<button class="action-btn" onclick="play(14)">다시 번호 뽑기</button>`;
-      break;
-  }
-}
-</script>
+        case 1: // 암산왕
+          let a = Math.floor(Math.random() * 50), b = Math.floor(Math.random() * 50);
+          display.innerHTML = `<div class="big-text">${a}+${b}</div>`;
+          controls.innerHTML = `<input type="number" id="ans"><button class="action-btn" onclick="checkCalc(${a + b})">확인</button>`;
+          window.checkCalc = (ans) => {
+            const val = document.getElementById("ans").value;
+            feedback.innerText = val == ans ? "✅ 정답!" : "❌ 오답!";
+            setTimeout(() => play(1), 1000);
+          };
+          addEnterListener("ans", () => checkCalc(a + b));
+          break;
+
+        case 2: // 카드 기억
+          let card = Math.floor(Math.random() * 10) + 1;
+          display.innerHTML = `<p class="helper-text">카드를 기억하세요!</p><div class="big-text">${card}</div>`;
+          setTimeout(() => {
+            display.innerHTML = `<p class="helper-text">카드가 사라졌습니다. 숫자를 입력하세요!</p>`;
+            controls.innerHTML = `<input type="number" id="mem"><button class="action-btn" onclick="checkMem(${card})">확인</button>`;
+            addEnterListener("mem", () => checkMem(card));
+          }, 1500);
+          window.checkMem = (ans) => {
+            const val = document.getElementById("mem").value;
+            feedback.innerText = val == ans ? "✅ 맞췄습니다!" : "❌ 틀렸습니다!";
+            setTimeout(() => play(2), 1000);
+          };
+          break;
+
+        case 3: // 숫자 맞추기
+          if (!window.targetNum) window.targetNum = Math.floor(Math.random() * 100) + 1;
+          display.innerHTML = `<div class="helper-text">1~100 사이의 숫자를 맞춰보세요</div>`;
+          controls.innerHTML = `<input type="number" id="numIn"><button class="action-btn" onclick="checkGuess()">입력</button>`;
+          window.checkGuess = () => {
+            const g = document.getElementById("numIn").value;
+            if (g == window.targetNum) {
+              feedback.innerText = "🎊 정답입니다!";
+              window.targetNum = null;
+            } else {
+              feedback.innerText = g > window.targetNum ? "DOWN ↓" : "UP ↑";
+            }
+          };
+          addEnterListener("numIn", checkGuess);
+          break;
+
+        case 4: // 반응속도
+          display.innerHTML = `<div id="box" style="width:110px;height:110px;background:#ff5b6e;border-radius:24px;animation:popIn .5s;box-shadow:0 10px 24px rgba(255,91,110,.28);"></div><p class="helper-text">초록색이 되면 클릭!</p>`;
+          const delay = 2000 + Math.random() * 3000;
+          setTimeout(() => {
+            const box = document.getElementById("box");
+            box.style.background = "#10b981";
+            box.style.boxShadow = "0 10px 24px rgba(16,185,129,.28)";
+            const start = Date.now();
+            box.onclick = () => {
+              feedback.innerText = `기록: ${Date.now() - start}ms`;
+              box.onclick = null;
+            };
+          }, delay);
+          break;
+
+        case 5: // 타자 연습
+          const words = [
+            "코딩","자바스크립트","게임","도전","프로그래밍","알고리즘","데이터","변수","함수","객체",
+            "클래스","조건문","반복문","배열","이벤트","브라우저","인터넷","웹","서버","클라이언트",
+            "인공지능","머신러닝","딥러닝","네트워크","보안","데이터베이스","SQL","HTML","CSS","React",
+            "Node","Python","Java","C언어","C++","Rust","Go","Swift","Kotlin","Android","iOS"
+          ];
+          const word = words[Math.floor(Math.random() * words.length)];
+          display.innerHTML = `<p class="helper-text">다음 단어를 입력하세요:</p><div class="big-text">${word}</div>`;
+          controls.innerHTML = `<input type="text" id="typeIn"><button class="action-btn" onclick="checkType('${word}')">확인</button>`;
+          const input = document.getElementById("typeIn");
+          input.focus();
+          window.checkType = (ans) => {
+            const val = input.value;
+            feedback.innerText = val === ans ? "✅ 정확합니다!" : "❌ 틀렸습니다!";
+            setTimeout(() => play(5), 1000);
+          };
+          addEnterListener("typeIn", () => checkType(word));
+          break;
+
+        case 6: // 무한 클릭
+          if (!window.clickCount) window.clickCount = 0;
+          display.innerHTML = `<p class="helper-text">버튼을 최대한 많이 클릭하세요!</p><p>현재 클릭 수: ${window.clickCount}</p>`;
+          controls.innerHTML = `<button class="action-btn" onclick="clickCount++;play(6)">클릭!</button>`;
+          break;
+
+        case 7: // 10초 챌린지
+          display.innerHTML = `<p class="helper-text">10초라고 생각되면 버튼을 누르세요!</p>`;
+          controls.innerHTML = `<button class="action-btn" onclick="startTen()">시작</button>`;
+          window.startTen = () => {
+            const start = Date.now();
+            controls.innerHTML = `<button class="action-btn" onclick="endTen(${start})">지금!</button>`;
+          };
+          window.endTen = (start) => {
+            const diff = (Date.now() - start) / 1000;
+            feedback.innerText = `⏱ 기록: ${diff.toFixed(2)}초`;
+          };
+          break;
+
+        case 8: // 색깔 찾기
+          const allColors = [
+            { en: "red", ko: "빨강" },
+            { en: "blue", ko: "파랑" },
+            { en: "green", ko: "초록" },
+            { en: "yellow", ko: "노랑" },
+            { en: "purple", ko: "보라" },
+            { en: "orange", ko: "주황" },
+            { en: "pink", ko: "분홍" },
+            { en: "brown", ko: "갈색" },
+            { en: "cyan", ko: "청록" },
+            { en: "lime", ko: "연두" },
+            { en: "magenta", ko: "자홍" },
+            { en: "teal", ko: "청색" }
+          ];
+
+          let shuffled = [...allColors].sort(() => 0.5 - Math.random());
+          let chosen = shuffled.slice(0, 10);
+          const target = chosen[Math.floor(Math.random() * chosen.length)];
+
+          display.innerHTML = `<p class="helper-text">${target.ko} 색을 찾으세요!</p>`;
+          controls.innerHTML = "";
+          chosen.forEach(c => {
+            const box = document.createElement("div");
+            box.className = "color-dot";
+            box.style.background = c.en;
+            box.onclick = () => {
+              feedback.innerText = c.ko === target.ko ? "✅ 정답!" : "❌ 오답!";
+              setTimeout(() => play(8), 1000);
+            };
+            controls.appendChild(box);
+          });
+          break;
+
+        case 9: // 순서 기억
+          const seq = [Math.floor(Math.random() * 9) + 1, Math.floor(Math.random() * 9) + 1, Math.floor(Math.random() * 9) + 1];
+          display.innerHTML = `<p class="helper-text">순서를 기억하세요!</p><div class="big-text">${seq.join(" - ")}</div>`;
+          setTimeout(() => {
+            display.innerHTML = `<p class="helper-text">숫자를 입력하세요 (예: 123)</p>`;
+            controls.innerHTML = `<input type="text" id="seqIn"><button class="action-btn" onclick="checkSeq('${seq.join("")}')">확인</button>`;
+            addEnterListener("seqIn", () => checkSeq(seq.join("")));
+          }, 2000);
+          window.checkSeq = (ans) => {
+            const val = document.getElementById("seqIn").value;
+            feedback.innerText = val === ans ? "✅ 맞췄습니다!" : "❌ 틀렸습니다!";
+            setTimeout(() => play(9), 1000);
+          };
+          break;
+
+        case 10: // 행운 주사위
+          display.innerHTML = `<div id="dice" class="dice"></div>`;
+          controls.innerHTML = "";
+          document.getElementById("dice").style.animation = "spinDice 1s";
+          setTimeout(() => {
+            const dice = Math.floor(Math.random() * 6) + 1;
+            renderDiceFace(dice);
+            controls.innerHTML = `<button class="action-btn" onclick="play(10)">다시 굴리기</button>`;
+          }, 1000);
+          break;
+
+        case 11: // 가위바위보
+          const choices = ["가위", "바위", "보"];
+          display.innerHTML = `<p class="helper-text">선택하세요!</p>`;
+          controls.innerHTML = choices.map(c => `<button class="action-btn" onclick="playRPS('${c}')">${c}</button>`).join('');
+          window.playRPS = (userChoice) => {
+            const compChoice = choices[Math.floor(Math.random() * 3)];
+            let result = "";
+            if (userChoice === compChoice) result = "🤝 비겼습니다!";
+            else if (
+              (userChoice === "가위" && compChoice === "보") ||
+              (userChoice === "바위" && compChoice === "가위") ||
+              (userChoice === "보" && compChoice === "바위")
+            ) result = "🎉 이겼습니다!";
+            else result = "😢 졌습니다!";
+            feedback.innerText = `당신: ${userChoice} / 컴퓨터: ${compChoice} → ${result}`;
+          };
+          break;
+
+        case 12: // 동전 던지기
+          display.innerHTML = `
+            <div id="coin" style="
+              width:88px;height:88px;border-radius:50%;
+              background:linear-gradient(180deg,#ffe67d,#ffb703);
+              display:flex;align-items:center;justify-content:center;
+              font-size:1.3rem;color:#3b2f00;font-weight:800;
+              box-shadow:0 14px 28px rgba(255,191,0,.25);
+              animation:flipCoin 1s;
+            "></div>
+          `;
+          controls.innerHTML = "";
+          setTimeout(() => {
+            const coin = Math.random() < 0.5 ? "앞면" : "뒷면";
+            document.getElementById("coin").innerText = coin;
+            controls.innerHTML = `<button class="action-btn" onclick="play(12)">다시 던지기</button>`;
+          }, 1000);
+          break;
+
+        case 13: // 눈대중 측정
+          const targetLen = Math.floor(Math.random() * 100) + 50;
+          display.innerHTML = `
+            <p class="helper-text">${targetLen}px 길이를 맞춰보세요!</p>
+            <input type="range" min="0" max="200" value="0" id="range">
+            <button class="action-btn" onclick="checkRange(${targetLen})">확인</button>
+          `;
+          window.checkRange = (target) => {
+            const val = document.getElementById("range").value;
+            if (parseInt(val) === target) {
+              feedback.innerText = `🎯 ${target}px 성공!`;
+            } else {
+              feedback.innerText = `❌ 빗나갔습니다! (입력: ${val}px, 목표: ${target}px)`;
+            }
+          };
+          break;
+
+        case 14: // 로또 번호
+          let nums = [];
+          while (nums.length < 6) {
+            let n = Math.floor(Math.random() * 45) + 1;
+            if (!nums.includes(n)) nums.push(n);
+          }
+          nums.sort((a, b) => a - b);
+          display.innerHTML = `
+            <div class="lotto-wrap">
+              ${nums.map(n => `<div class="lotto-ball">${n}</div>`).join('')}
+            </div>
+          `;
+          controls.innerHTML = `<button class="action-btn" onclick="play(14)">다시 번호 뽑기</button>`;
+          break;
+      }
+    }
+  </script>
 </body>
 </html>
