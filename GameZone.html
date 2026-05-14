@@ -843,18 +843,43 @@
           break;
 
         case 3: // 숫자 맞추기
-          if (!window.targetNum) window.targetNum = Math.floor(Math.random() * 100) + 1;
-          display.innerHTML = `<div class="helper-text">1~100 사이의 숫자를 맞춰보세요</div>`;
-          controls.innerHTML = `<input type="number" id="numIn"><button class="action-btn" onclick="checkGuess()">입력</button>`;
+          if (!window.targetNum) {
+            window.targetNum = Math.floor(Math.random() * 100) + 1;
+            window.guessAttempts = 0;
+          }
+        
+          display.innerHTML = `
+            <div class="helper-text">1~100 사이의 숫자를 맞춰보세요</div>
+            <div style="margin-top:8px; color:#aab4d4; font-weight:600;">
+              시도 횟수: ${window.guessAttempts}번
+            </div>
+          `;
+        
+          controls.innerHTML = `
+            <input type="number" id="numIn">
+            <button class="action-btn" onclick="checkGuess()">입력</button>
+          `;
+        
           window.checkGuess = () => {
-            const g = document.getElementById("numIn").value;
-            if (g == window.targetNum) {
-              feedback.innerText = "🎊 정답입니다!";
+            const g = parseInt(document.getElementById("numIn").value);
+        
+            if (isNaN(g)) {
+              feedback.innerText = "숫자를 입력해주세요!";
+              return;
+            }
+        
+            window.guessAttempts++;
+        
+            if (g === window.targetNum) {
+              feedback.innerText = `🎊 정답입니다! (${window.guessAttempts}번 만에 성공)`;
               window.targetNum = null;
+              window.guessAttempts = 0;
             } else {
               feedback.innerText = g > window.targetNum ? "DOWN ↓" : "UP ↑";
+              play(3);
             }
           };
+        
           addEnterListener("numIn", checkGuess);
           break;
 
