@@ -1,160 +1,340 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fun Zone Mega - 15 Games</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fun Zone Mega - 15 Games</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #8b5cf6;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Pretendard',system-ui,sans-serif; }
+    body { background:var(--bg); color:var(--text); padding:40px 20px; min-height:100vh; }
+    header { text-align:center; margin-bottom:40px; }
+    header h1 { font-size:2.5rem; margin-bottom:10px; background:linear-gradient(to right,#a78bfa,#f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: glowText 3s infinite alternate; }
+    @keyframes glowText { from{filter:brightness(1);} to{filter:brightness(1.5);} }
+    header p { color:var(--text-muted); }
 
-<style>
-:root { --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-body { background: var(--primary-gradient); min-height: 100vh; padding: 20px; }
-.game-card { background:white; border-radius:15px; padding:20px; text-align:center; }
-.btn-game { background:var(--primary-gradient); color:white; border:none; border-radius:25px; width:100%; }
-.display-area { font-size:2rem; margin:15px 0; background:#f8f9fa; border-radius:10px; min-height:120px; display:flex; align-items:center; justify-content:center; flex-direction:column;}
-.card-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
-.memory-card { height:60px; background:#764ba2; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:transparent; cursor:pointer;}
-.memory-card.flipped { background:white; color:black; border:2px solid #764ba2;}
-</style>
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:15px; max-width:1100px; margin:auto; }
+    .card { background:var(--card-bg); padding:25px; border-radius:20px; text-align:center; transition:.3s; border:1px solid rgba(255,255,255,0.05); cursor:pointer; opacity:0; transform:translateY(20px); animation: cardIn .6s forwards; }
+    @keyframes cardIn { to{opacity:1; transform:translateY(0);} }
+    .card:hover { transform:scale(1.05); background:#2d3a4f; border-color:var(--accent); box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+    .card .icon { font-size:2rem; margin-bottom:10px; display:block; }
+    .card h3 { font-size:1.1rem; font-weight:600; }
+
+    #gameOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); display:none; justify-content:center; align-items:center; z-index:1000; backdrop-filter:blur(10px); }
+    #modalContent { background:var(--card-bg); width:90%; max-width:500px; padding:40px; border-radius:30px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.5); animation: modalIn .4s ease; }
+    @keyframes modalIn { from{opacity:0; transform:scale(0.8);} to{opacity:1; transform:scale(1);} }
+    .close-btn { position:absolute; top:20px; right:20px; background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer; transition:.2s; }
+    .close-btn:hover { transform:rotate(90deg); }
+
+    .game-display { min-height:150px; display:flex; flex-direction:column; justify-content:center; align-items:center; margin-bottom:20px; }
+    .big-text { font-size:3rem; font-weight:800; margin-bottom:20px; animation: popIn .5s ease; }
+    @keyframes popIn { from{opacity:0; transform:scale(0.5);} to{opacity:1; transform:scale(1);} }
+
+    input { background:#0f172a; border:1px solid #334155; color:white; padding:12px; border-radius:10px; width:100%; margin-bottom:15px; text-align:center; font-size:1.2rem; transition:.3s; }
+    input:focus { border-color:var(--accent); outline:none; transform:scale(1.05); }
+    .action-btn { background:var(--accent); color:white; border:none; padding:12px 25px; border-radius:12px; font-weight:bold; cursor:pointer; width:100%; transition:.2s; }
+    .action-btn:hover { opacity:.9; transform:translateY(-2px); }
+    .action-btn:active { transform:scale(.95) rotate(-2deg); }
+    .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; }
+
+    .result-msg { margin-top:15px; font-weight:bold; color:#10b981; animation: fadeBounce .6s ease; }
+    @keyframes fadeBounce { 0%{opacity:0; transform:translateY(10px);} 50%{opacity:1; transform:translateY(-5px);} 100%{transform:translateY(0);} }
+	
+	.dice {
+	  width:100px;
+	  height:100px;
+	  background:white;
+	  border-radius:10px;
+	  position:relative;
+	  margin:auto;
+	}
+	@keyframes spinDice {
+	  0%   { transform: rotate(0deg); }
+	  100% { transform: rotate(720deg); }
+	}
+	
+	@keyframes flipCoin {
+	  0% { transform:rotateY(0deg); }
+	  100% { transform:rotateY(720deg); }
+	}
+  </style>
 </head>
-
 <body>
-
-<div class="text-center text-white mb-5">
-<h1>🎮 Fun Zone Mega</h1>
-<p>총 15가지 게임 완성판</p>
+<header>
+  <h1>🎮 Fun Zone Mega</h1>
+  <p>심심할 틈이 없는 15가지 미니게임 파크</p>
+</header>
+<div class="grid" id="grid"></div>
+<div id="gameOverlay">
+  <div id="modalContent">
+    <button class="close-btn" onclick="closeGame()">✕</button>
+    <h2 id="modalTitle" style="margin-bottom:25px;">게임 제목</h2>
+    <div class="game-display" id="display"></div>
+    <div id="controls"></div>
+    <div id="feedback" class="result-msg"></div>
+  </div>
 </div>
-
-<div class="container">
-<div class="row g-3" id="gameMenu"></div>
-</div>
-
-<div class="modal fade" id="gameModal">
-<div class="modal-dialog">
-<div class="modal-content">
-<div class="modal-header border-0">
-<h5 id="mTitle"></h5>
-<button class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-<div class="modal-body" id="mBody"></div>
-</div>
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const gameList = [
-{id:1,name:"🎨 스트룹"},{id:2,name:"🧮 암산"},{id:3,name:"🃏 카드"},{id:4,name:"🔢 숫자"},
-{id:5,name:"⚡ 반응"},{id:6,name:"⌨️ 타자"},{id:7,name:"🖱️ 클릭"},
-{id:8,name:"🕒 10초"},{id:9,name:"🌈 색찾기"},{id:10,name:"🍎 기억"},
-{id:11,name:"🎲 주사위"},{id:12,name:"✌ 가위바위보"},{id:13,name:"🪙 동전"},
-{id:14,name:"📏 길이"},{id:15,name:"🍀 로또"}
+const games = [
+  {n:"스트룹 테스트",i:"🎨"}, {n:"암산왕",i:"🧮"}, {n:"카드 기억",i:"🃏"},
+  {n:"숫자 맞추기",i:"🔢"}, {n:"반응속도",i:"⚡"}, {n:"타자 연습",i:"⌨️"},
+  {n:"무한 클릭",i:"🖱️"}, {n:"10초 챌린지",i:"🕒"}, {n:"색깔 찾기",i:"🌈"},
+  {n:"순서 기억",i:"🍎"}, {n:"행운 주사위",i:"🎲"}, {n:"가위바위보",i:"✌️"},
+  {n:"동전 던지기",i:"🪙"}, {n:"눈대중 측정",i:"📏"}, {n:"로또 번호",i:"🍀"}
 ];
 
-const menu = document.getElementById('gameMenu');
-gameList.forEach(g=>{
-menu.innerHTML+=`<div class="col-6 col-md-3">
-<div class="game-card">
-<h5>${g.name}</h5>
-<button class="btn-game" onclick="loadGame(${g.id})">시작</button>
-</div></div>`;
+const grid=document.getElementById("grid"),
+overlay=document.getElementById("gameOverlay"),
+display=document.getElementById("display"),
+controls=document.getElementById("controls"),
+feedback=document.getElementById("feedback");
+
+games.forEach((g,idx)=>{
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML=`<span class="icon">${g.i}</span><h3>${g.n}</h3>`;
+  div.onclick=()=>play(idx);
+  grid.appendChild(div);
 });
 
-const modal = new bootstrap.Modal(document.getElementById('gameModal'));
-const mTitle = document.getElementById('mTitle');
-const mBody = document.getElementById('mBody');
+function closeGame(){overlay.style.display="none";}
 
-function loadGame(id){
-mTitle.textContent = gameList.find(g=>g.id===id).name;
-mBody.innerHTML='<div class="display-area" id="d"></div><div id="c"></div>';
-const d=document.getElementById('d');
-const c=document.getElementById('c');
-
-if(id===1){
-const colors=['빨강','파랑','초록','노랑'];
-const real=colors[Math.floor(Math.random()*4)];
-d.textContent=colors[Math.floor(Math.random()*4)];
-d.style.color=real;
-c.innerHTML=colors.map(x=>`<button class="btn btn-outline-dark m-1" onclick="alert('${real===x?'정답':'오답'}')">${x}</button>`).join('');
+function addEnterListener(inputId, callback){
+  const input=document.getElementById(inputId);
+  if(input){
+    input.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){callback();}
+    });
+  }
 }
 
-else if(id===2){
-let a=Math.floor(Math.random()*50),b=Math.floor(Math.random()*50);
-d.textContent=`${a}+${b}`;
-c.innerHTML=`<input id="i" class="form-control"><button onclick="alert(+i.value===${a+b}?'정답':'오답')">확인</button>`;
-}
+function play(idx){
+  overlay.style.display="flex";
+  document.getElementById("modalTitle").innerText=games[idx].n;
+  feedback.innerText="";controls.innerHTML="";display.innerHTML="";
+  switch(idx){
+    case 0: // 스트룹 테스트
+      const colors=[{en:"red",ko:"빨강"},{en:"blue",ko:"파랑"},{en:"green",ko:"초록"},{en:"yellow",ko:"노랑"}];
+      const textObj=colors[Math.floor(Math.random()*4)],colorObj=colors[Math.floor(Math.random()*4)];
+      display.innerHTML=`<div class="big-text" style="color:${colorObj.en}">${textObj.ko}</div>`;
+      controls.innerHTML=`<div class="btn-group">`+colors.map(c=>`<button class="action-btn" onclick="checkStroop('${c.ko}','${colorObj.ko}')">${c.ko}</button>`).join('')+`</div>`;
+      window.checkStroop=(choice,ans)=>{feedback.innerText=choice===ans?"✅ 정답!":"❌ 틀렸어요 (답:"+ans+")";setTimeout(()=>play(0),1000);};
+      break;
 
-else if(id===3){
-let arr=[1,1,2,2,3,3,4,4].sort(()=>Math.random()-0.5);
-c.innerHTML='<div class="card-grid">'+arr.map((v,i)=>`<div class="memory-card" onclick="this.classList.add('flipped');this.textContent=${v}">${v}</div>`).join('')+'</div>';
-}
+    case 1: // 암산왕
+      let a=Math.floor(Math.random()*50),b=Math.floor(Math.random()*50);
+      display.innerHTML=`<div class="big-text">${a}+${b}</div>`;
+      controls.innerHTML=`<input type="number" id="ans"><button class="action-btn" onclick="checkCalc(${a+b})">확인</button>`;
+      window.checkCalc=(ans)=>{const val=document.getElementById("ans").value;feedback.innerText=val==ans?"✅ 정답!":"❌ 오답!";setTimeout(()=>play(1),1000);};
+      addEnterListener("ans",()=>checkCalc(a+b));
+      break;
 
-else if(id===4){
-let t=Math.floor(Math.random()*100);
-c.innerHTML=`<input id="i"><button onclick="alert(i.value==${t}?'정답':i.value<${t}?'UP':'DOWN')">확인</button>`;
-}
+    case 2: // 카드 기억
+      let card=Math.floor(Math.random()*10)+1;
+      display.innerHTML=`<p>카드를 기억하세요!</p><div class="big-text">${card}</div>`;
+      setTimeout(()=>{display.innerHTML=`<p>카드가 사라졌습니다. 숫자를 입력하세요!</p>`;controls.innerHTML=`<input type="number" id="mem"><button class="action-btn" onclick="checkMem(${card})">확인</button>`;addEnterListener("mem",()=>checkMem(card));},1500);
+      window.checkMem=(ans)=>{const val=document.getElementById("mem").value;feedback.innerText=val==ans?"✅ 맞췄습니다!":"❌ 틀렸습니다!";setTimeout(()=>play(2),1000);};
+      break;
 
-else if(id===5){
-d.textContent="기다리세요...";
-setTimeout(()=>{d.style.background='green';d.textContent='클릭!';d.onclick=()=>alert('반응 성공');},2000);
-}
+    case 3: // 숫자 맞추기
+      if(!window.targetNum)window.targetNum=Math.floor(Math.random()*100)+1;
+      display.innerHTML=`<div>1~100 사이의 숫자를 맞춰보세요</div>`;
+      controls.innerHTML=`<input type="number" id="numIn"><button class="action-btn" onclick="checkGuess()">입력</button>`;
+      window.checkGuess=()=>{const g=document.getElementById("numIn").value;if(g==window.targetNum){feedback.innerText="🎊 정답입니다!";window.targetNum=null;}else{feedback.innerText=g>window.targetNum?"DOWN ↓":"UP ↑";}};
+      addEnterListener("numIn",checkGuess);
+      break;
 
-else if(id===6){
-let word="apple";
-d.textContent=word;
-c.innerHTML=`<input id="i"><button onclick="alert(i.value==='${word}'?'정답':'오답')">확인</button>`;
-}
+    case 4: // 반응속도
+      display.innerHTML=`<div id="box" style="width:100px;height:100px;background:red;border-radius:20px;animation:popIn .5s;"></div><p>초록색이 되면 클릭!</p>`;
+      const delay=2000+Math.random()*3000;
+      setTimeout(()=>{const box=document.getElementById("box");box.style.background="#10b981";const start=Date.now();box.onclick=()=>{feedback.innerText=`기록:${Date.now()-start}ms`;box.onclick=null;};},delay);
+      break;
 
-else if(id===7){
-let n=0;
-c.innerHTML=`<button onclick="n++;this.textContent=n">클릭</button>`;
-}
+    case 5: // 타자 연습
+	  const words = [
+		"코딩","자바스크립트","게임","도전","프로그래밍","알고리즘","데이터","변수","함수","객체",
+		"클래스","조건문","반복문","배열","이벤트","브라우저","인터넷","웹","서버","클라이언트",
+		"인공지능","머신러닝","딥러닝","네트워크","보안","데이터베이스","SQL","HTML","CSS","React",
+		"Node","Python","Java","C언어","C++","Rust","Go","Swift","Kotlin","Android","iOS"
+	  ];
+	  const word = words[Math.floor(Math.random()*words.length)];
+	  display.innerHTML = `<p>다음 단어를 입력하세요:</p><div class="big-text">${word}</div>`;
+	  controls.innerHTML = `<input type="text" id="typeIn"><button class="action-btn" onclick="checkType('${word}')">확인</button>`;
+	  const input = document.getElementById("typeIn");
+	  input.focus(); // 자동 포커스
+	  window.checkType = (ans) => {
+		const val = input.value;
+		feedback.innerText = val === ans ? "✅ 정확합니다!" : "❌ 틀렸습니다!";
+		setTimeout(()=>play(5),1000);
+	  };
+	  addEnterListener("typeIn",()=>checkType(word));
+	  break;
 
-else if(id===8){
-let t=Date.now();
-c.innerHTML=`<button onclick="alert(Math.abs((Date.now()-t)/1000-10)+'초 오차')">STOP</button>`;
-}
+    case 6: // 무한 클릭
+      if(!window.clickCount)window.clickCount=0;
+      display.innerHTML=`<p>버튼을 최대한 많이 클릭하세요!</p><p>현재 클릭 수:${window.clickCount}</p>`;
+      controls.innerHTML=`<button class="action-btn" onclick="clickCount++;play(6)">클릭!</button>`;
+      break;
 
-else if(id===9){
-let base=Math.floor(Math.random()*255);
-let diff=base+20;
-c.innerHTML=`<div style="display:flex">
-<div onclick="alert('오답')" style="flex:1;height:50px;background:rgb(${base},0,0)"></div>
-<div onclick="alert('정답')" style="flex:1;height:50px;background:rgb(${diff},0,0)"></div></div>`;
-}
+    case 7: // 10초 챌린지
+      display.innerHTML=`<p>10초라고 생각되면 버튼을 누르세요!</p>`;
+      controls.innerHTML=`<button class="action-btn" onclick="startTen()">시작</button>`;
+      window.startTen=()=>{const start=Date.now();controls.innerHTML=`<button class="action-btn" onclick="endTen(${start})">지금!</button>`;};
+      window.endTen=(start)=>{const diff=(Date.now()-start)/1000;feedback.innerText=`⏱ 기록:${diff.toFixed(2)}초`;};
+      break;
 
-else if(id===10){
-let seq=[1,2,3];
-d.textContent=seq.join(',');
-c.innerHTML=`<input id="i"><button onclick="alert(i.value==='${seq.join('')}'?'정답':'오답')">확인</button>`;
-}
+    case 8: // 색깔 찾기
+	  // 색상 배열 (영문 코드 + 한글 이름)
+	  const allColors = [
+		{en:"red", ko:"빨강"},
+		{en:"blue", ko:"파랑"},
+		{en:"green", ko:"초록"},
+		{en:"yellow", ko:"노랑"},
+		{en:"purple", ko:"보라"},
+		{en:"orange", ko:"주황"},
+		{en:"pink", ko:"분홍"},
+		{en:"brown", ko:"갈색"},
+		{en:"cyan", ko:"청록"},
+		{en:"lime", ko:"연두"},
+		{en:"magenta", ko:"자홍"},
+		{en:"teal", ko:"청색"}
+	  ];
 
-else if(id===11){
-c.innerHTML=`<button onclick="alert(Math.ceil(Math.random()*6))">굴리기</button>`;
-}
+	  // 랜덤으로 10개 뽑기 (중복 없음)
+	  let shuffled = allColors.sort(()=>0.5-Math.random());
+	  let chosen = shuffled.slice(0,10);
 
-else if(id===12){
-c.innerHTML=`<button onclick="alert('컴:'+['가위','바위','보'][Math.floor(Math.random()*3)])">가위바위보</button>`;
-}
+	  // 목표 색 하나 선택
+	  const target = chosen[Math.floor(Math.random()*chosen.length)];
+	  display.innerHTML = `<p>${target.ko} 색을 찾으세요!</p>`;
+	  controls.innerHTML = "";
 
-else if(id===13){
-c.innerHTML=`<button onclick="alert(Math.random()>0.5?'앞':'뒤')">던지기</button>`;
-}
+	  // 랜덤 위치 배치
+	  chosen.forEach(c=>{
+		const box=document.createElement("div");
+		box.style.width="50px";
+		box.style.height="50px";
+		box.style.borderRadius="50%";
+		box.style.background=c.en; // 실제 색상은 영어 코드
+		box.style.display="inline-block";
+		box.style.margin="8px";
+		box.style.cursor="pointer";
+		box.onclick=()=>{
+		  feedback.innerText=c.ko===target.ko?"✅ 정답!":"❌ 오답!";
+		  setTimeout(()=>play(8),1000);
+		};
+		controls.appendChild(box);
+	  });
+	  break;
 
-else if(id===14){
-let t=Math.floor(Math.random()*100);
-d.textContent="길이 맞춰봐";
-c.innerHTML=`<input id="i"><button onclick="alert(Math.abs(i.value-${t}))">오차</button>`;
-}
+    // 순서 기억 개선
+	case 9:
+	  const seq=[Math.floor(Math.random()*9)+1,Math.floor(Math.random()*9)+1,Math.floor(Math.random()*9)+1];
+	  display.innerHTML=`<p>순서를 기억하세요!</p><div class="big-text">${seq.join(" - ")}</div>`;
+	  setTimeout(()=>{
+		display.innerHTML=`<p>숫자를 입력하세요 (예: 123)</p>`;
+		controls.innerHTML=`<input type="text" id="seqIn"><button class="action-btn" onclick="checkSeq('${seq.join("")}')">확인</button>`;
+		addEnterListener("seqIn",()=>checkSeq(seq.join("")));
+	  },2000);
+	  window.checkSeq=(ans)=>{
+		const val=document.getElementById("seqIn").value;
+		feedback.innerText=val===ans?"✅ 맞췄습니다!":"❌ 틀렸습니다!";
+		setTimeout(()=>play(9),1000);
+	  };
+	  break;
 
-else if(id===15){
-c.innerHTML=`<button onclick="let n=[];while(n.length<6){let r=Math.floor(Math.random()*45)+1;if(!n.includes(r))n.push(r)};alert(n)">생성</button>`;
-}
+    case 10: // 행운 주사위
+	  display.innerHTML = `<div id="dice" class="dice"></div>`;
+	  controls.innerHTML = "";
+	  document.getElementById("dice").style.animation = "spinDice 1s";
 
-modal.show();
+	  setTimeout(()=>{
+		const dice=Math.floor(Math.random()*6)+1;
+		renderDiceFace(dice);
+		controls.innerHTML=`<button class="action-btn" onclick="play(10)">다시 굴리기</button>`;
+	  },1000);
+	  break;
+
+	// 주사위 눈 렌더링 함수
+	function renderDiceFace(num){
+	  const dice=document.getElementById("dice");
+	  dice.innerHTML="";
+	  const positions={
+		1:[[50,50]],
+		2:[[20,20],[80,80]],
+		3:[[20,20],[50,50],[80,80]],
+		4:[[20,20],[20,80],[80,20],[80,80]],
+		5:[[20,20],[20,80],[80,20],[80,80],[50,50]],
+		6:[[20,20],[20,50],[20,80],[80,20],[80,50],[80,80]]
+	  };
+	  positions[num].forEach(([x,y])=>{
+		const dot=document.createElement("div");
+		dot.style.width="15px";
+		dot.style.height="15px";
+		dot.style.background="black";
+		dot.style.borderRadius="50%";
+		dot.style.position="absolute";
+		dot.style.left=`${x-7}px`;
+		dot.style.top=`${y-7}px`;
+		dice.appendChild(dot);
+	  });
+	}
+
+    case 11: // 가위바위보
+      const choices=["가위","바위","보"];
+      display.innerHTML=`<p>선택하세요!</p>`;
+      controls.innerHTML=choices.map(c=>`<button class="action-btn" onclick="playRPS('${c}')">${c}</button>`).join('');
+      window.playRPS=(userChoice)=>{
+        const compChoice=choices[Math.floor(Math.random()*3)];
+        let result="";
+        if(userChoice===compChoice) result="🤝 비겼습니다!";
+        else if((userChoice==="가위"&&compChoice==="보")||(userChoice==="바위"&&compChoice==="가위")||(userChoice==="보"&&compChoice==="바위")) result="🎉 이겼습니다!";
+        else result="😢 졌습니다!";
+        feedback.innerText=`당신:${userChoice} / 컴퓨터:${compChoice} → ${result}`;
+      };
+      break;
+
+    case 12: // 동전 던지기
+	  display.innerHTML = `<div id="coin" style="width:80px;height:80px;border-radius:50%;background:gold;display:flex;align-items:center;justify-content:center;font-size:1.5rem;animation:flipCoin 1s;"></div>`;
+	  controls.innerHTML = "";
+	  setTimeout(()=>{
+		const coin=Math.random()<0.5?"앞면":"뒷면";
+		document.getElementById("coin").innerText = coin;
+		controls.innerHTML=`<button class="action-btn" onclick="play(12)">다시 던지기</button>`;
+	  },1000);
+	  break;
+
+    case 13: // 눈대중 측정
+	  const targetLen=Math.floor(Math.random()*100)+50; // 50~150px 랜덤
+	  display.innerHTML=`<p>${targetLen}px 길이를 맞춰보세요!</p><input type="range" min="0" max="200" value="0" id="range"><button class="action-btn" onclick="checkRange(${targetLen})">확인</button>`;
+	  window.checkRange=(target)=>{
+		const val=document.getElementById("range").value;
+		if(parseInt(val)===target){
+		  feedback.innerText=`🎯 ${target}px 성공!`;
+		} else {
+		  feedback.innerText=`❌ 빗나갔습니다! (입력:${val}px, 목표:${target}px)`;
+		}
+	  };
+	  break;
+
+    case 14: // 로또 번호
+      let nums=[];
+      while(nums.length<6){let n=Math.floor(Math.random()*45)+1;if(!nums.includes(n))nums.push(n);}
+      nums.sort((a,b)=>a-b);
+            display.innerHTML=`<div style="display:flex;gap:10px;">`+
+        nums.map(n=>`<div style="width:40px;height:40px;background:white;color:black;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;animation:popIn .5s;">${n}</div>`).join('')+
+        `</div>`;
+      controls.innerHTML=`<button class="action-btn" onclick="play(14)">다시 번호 뽑기</button>`;
+      break;
+  }
 }
 </script>
-
 </body>
 </html>
