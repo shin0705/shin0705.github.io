@@ -1,177 +1,604 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>신민준의 이력서</title>
-    <style>
-        /* 기본 스타일 설정 */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>신민준 | 이력서</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --subtext: #6b7280;
+      --point: #2563eb;
+      --point-dark: #1d4ed8;
+      --line: #e5e7eb;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 20px;
+    }
 
-        .container {
-            width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 25%),
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 20%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
 
-        header h1 {
-            font-size: 36px;
-            color: #333;
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-        header p {
-            font-size: 18px;
-            color: #777;
-        }
+    .wrapper {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
 
-        header img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      color: #fff;
+      border-radius: 28px;
+      padding: 42px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
 
-        .section-title {
-            font-size: 28px;
-            color: #1a73e8;
-            margin-bottom: 10px;
-        }
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+    }
 
-        .section-content {
-            margin-bottom: 40px;
-        }
+    .hero::before {
+      width: 220px;
+      height: 220px;
+      top: -80px;
+      right: -60px;
+    }
 
-        .experience-item, .project-item, .education-item, .certificate-item {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-        }
+    .hero::after {
+      width: 140px;
+      height: 140px;
+      bottom: -40px;
+      right: 120px;
+    }
 
-        .experience-item h3, .project-item h3, .education-item h3, .certificate-item h3 {
-            font-size: 24px;
-            margin: 0;
-            color: #1a73e8;
-        }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
 
-        .experience-item p, .project-item p, .education-item p, .certificate-item p {
-            margin: 5px 0;
-        }
+    .hero-left h1 {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
 
-        .role {
-            font-weight: bold;
-        }
+    .hero-left .subtitle {
+      margin-top: 10px;
+      font-size: 18px;
+      opacity: 0.95;
+    }
 
-        .contact-info a {
-            color: #1a73e8;
-            text-decoration: none;
-            font-weight: bold;
-        }
+    .hero-left .intro {
+      margin-top: 16px;
+      max-width: 700px;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.9);
+    }
 
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .hero-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 22px;
+      position: sticky;
+      top: 24px;
+    }
+
+    .profile-box {
+      text-align: center;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 22px;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--point);
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      border: 4px solid #fff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+    }
+
+    .profile-box h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .profile-box p {
+      margin: 8px 0 0;
+      color: var(--subtext);
+      font-size: 14px;
+    }
+
+    .side-section + .side-section {
+      margin-top: 24px;
+    }
+
+    .side-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--point);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .contact-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--subtext);
+      word-break: break-all;
+    }
+
+    .contact-item strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: var(--point-dark);
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid #dbeafe;
+    }
+
+    .cert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cert-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .cert-item strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .cert-item span {
+      font-size: 13px;
+      color: var(--subtext);
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-card {
+      padding: 26px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-header .icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: var(--point);
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 10px;
+      width: 2px;
+      background: #dbeafe;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 36px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 8px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--point);
+      box-shadow: 0 0 0 4px #dbeafe;
+    }
+
+    .timeline-box {
+      background: #fbfdff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .timeline-box h4 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .meta {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--point);
+      font-weight: 700;
+    }
+
+    .desc {
+      margin-top: 10px;
+      color: var(--subtext);
+      font-size: 15px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .project-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .project-card h4 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .project-role {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--point);
+      background: #eff6ff;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    .project-card p {
+      margin: 0;
+      color: var(--subtext);
+      font-size: 15px;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--subtext);
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 30px 24px;
+      }
+
+      .hero-left h1 {
+        font-size: 34px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrapper {
+        padding: 18px 14px 50px;
+      }
+
+      .hero-left h1 {
+        font-size: 30px;
+      }
+
+      .section-card,
+      .sidebar {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <!-- 헤더 섹션 -->
-    <header>
-        <h1>신민준</h1>
-        <p>서울아이티고등학교 네트워크보안 솔루션과 졸업생</p>
-    </header>
-
-    <!-- 학력 섹션 -->
-    <section class="section-content">
-        <div class="section-title">학력</div>
-        <div class="education-item">
-            <h3>서울아이티고 - 네트워크 보안 솔루션과</h3>
-            <p class="role">2023년 3월 - 2026년 1월</p>
-            <p>네트워크 보안 및 솔루션 설계와 관련된 전반적인 지식을 학습하며, 실무 프로젝트와 이론을 학습하였습니다.</p>
+  <div class="wrapper">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-left">
+          <h1>신민준</h1>
+          <div class="subtitle">서울아이티고등학교 네트워크보안솔루션과</div>
+          <div class="intro">
+            네트워크 보안과 시스템 운영에 관심을 가지고 학습해온 학생입니다.
+            보안 실습, 웹 애플리케이션 취약점 분석, Java/Python 기반 개발 경험을 바탕으로
+            실무형 보안 인재로 성장하고 있습니다.
+          </div>
         </div>
+        <div class="hero-right">
+          <span class="chip">Java</span>
+          <span class="chip">Python</span>
+          <span class="chip">Network Security</span>
+          <span class="chip">Linux</span>
+        </div>
+      </div>
     </section>
 
-    <!-- 경력 섹션 -->
-    <section class="section-content">
-        <div class="section-title">경력</div>
-        <div class="experience-item">
-            <h3>ChatGPT 자바 프로그래밍 특강 이수</h3>
-            <p class="role">2023년 8월</p>
-            <p>ChatGPT를 활용하여 자바 프로그래밍의 기초부터 심화까지 학습하며, 다양한 실습을 통해 문제 해결 능력을 키웠습니다.</p>
+    <div class="layout">
+      <aside class="card sidebar">
+        <div class="profile-box">
+          <div class="avatar">신</div>
+          <h2>신민준</h2>
+          <p>보안 · 네트워크 · 시스템 운영</p>
         </div>
-    </section>
 
-    <!-- 프로젝트 섹션 -->
-    <section class="section-content">
-        <div class="section-title">프로젝트</div>
-        <div class="project-item">
-            <h3>네트워크 보안 실습</h3>
-            <p class="role">기획 및 개발</p>
-            <p>네트워크 보안의 주요 개념을 이해하고, 실시간 해킹 공격 및 방어 시나리오를 실습하여 보안 사고 대응 능력을 배양했습니다.</p>
+        <div class="side-section">
+          <div class="side-title">Contact</div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <strong>Email</strong>
+              <a href="mailto:shinmin07jun@gmail.com">shinmin07jun@gmail.com</a>
+            </div>
+            <div class="contact-item">
+              <strong>Portfolio</strong>
+              <a href="https://shin0705.github.io" target="_blank">shin0705.github.io</a>
+            </div>
+          </div>
         </div>
-        <div class="project-item">
-            <h3>웹 애플리케이션 보안 강화</h3>
-            <p class="role">보안 분석 및 개선</p>
-            <p>웹 애플리케이션의 취약점을 분석하고, 보안 강화를 위한 솔루션을 적용하여 시스템 안정성을 확보했습니다.</p>
-        </div>
-    </section>
 
-    <!-- 기술 섹션 -->
-    <section class="section-content">
-        <div class="section-title">기술</div>
-        <p><strong>프로그래밍 언어:</strong> Java, Python</p>
-        <p><strong>네트워크 보안:</strong> TCP/IP, VPN, 방화벽, IDS/IPS</p>
-        <p><strong>기타 기술:</strong> Git, Linux, SQL, MySQL</p>
-    </section>
+        <div class="side-section">
+          <div class="side-title">Skills</div>
+          <div class="skills">
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">TCP/IP</span>
+            <span class="skill-pill">VPN</span>
+            <span class="skill-pill">Firewall</span>
+            <span class="skill-pill">IDS/IPS</span>
+            <span class="skill-pill">Linux</span>
+            <span class="skill-pill">Git</span>
+            <span class="skill-pill">SQL</span>
+            <span class="skill-pill">MySQL</span>
+          </div>
+        </div>
 
-    <!-- 자격증 섹션 -->
-    <section class="section-content">
-        <div class="section-title">자격증</div>
-        <div class="certificate-item">
-            <h3>네트워크 관리사 2급</h3>
-            <p class="role">취득</p>
-            <p>네트워크 인프라의 설치 및 관리, 보안 설정 등을 포함한 네트워크 관리에 필요한 지식과 기술을 갖춘 자격증입니다.</p>
+        <div class="side-section">
+          <div class="side-title">Certificates</div>
+          <div class="cert-list">
+            <div class="cert-item">
+              <strong>네트워크관리사 2급</strong>
+              <span>네트워크 인프라 관리 및 운영</span>
+            </div>
+            <div class="cert-item">
+              <strong>NSE4</strong>
+              <span>Fortinet 보안 솔루션 전문성</span>
+            </div>
+            <div class="cert-item">
+              <strong>정보기기운영기능사</strong>
+              <span>시스템 운영 및 유지보수 역량</span>
+            </div>
+            <div class="cert-item">
+              <strong>프로그래밍 기능사</strong>
+              <span>프로그래밍 및 알고리즘 기초 역량</span>
+            </div>
+          </div>
         </div>
-        <div class="certificate-item">
-            <h3>NSE4</h3>
-            <p class="role">취득</p>
-            <p>Fortinet의 네트워크 보안 솔루션에 대한 심화적인 이해를 바탕으로, 보안 전문가로서의 역량을 강화한 자격증입니다.</p>
-        </div>
-        <div class="certificate-item">
-            <h3>정보기기운영기능사</h3>
-            <p class="role">취득</p>
-            <p>정보기기 관리 및 운영, 시스템 유지보수 등에 필요한 실무 지식과 기술을 갖추기 위한 자격증입니다.</p>
-        </div>
-        <div class="certificate-item">
-            <h3>프로그래밍 기능사(전, 정보처리기능사)</h3>
-            <p class="role">취득</p>
-            <p>컴퓨터 프로그램 개발과 알고리즘 기초, 코딩 실무 능력을 검증하는 자격증입니다.</p>
-        </div>
-    </section>
+      </aside>
 
-    <!-- 연락처 섹션 -->
-    <section class="section-content">
-        <div class="section-title">연락처</div>
-        <div class="contact-info">
-            <p>Email: <a href="mailto:shinmin07jun@gmail.com">shinmin07jun@gmail.com</a></p>
-            <p>GitHub: <a href="https://shin0705.github.io" target="_blank">shin0705.github.io</a></p>
-        </div>
-    </section>
-</div>
+      <main class="main">
+        <section class="card section-card">
+          <div class="section-header">
+            <div class="icon">🎓</div>
+            <h3>학력</h3>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-box">
+                <h4>서울아이티고등학교 - 네트워크보안솔루션과</h4>
+                <div class="meta">2023년 3월 - 2026년 1월</div>
+                <div class="desc">
+                  네트워크 보안, 시스템 운영, 보안 솔루션 설계에 대한 전반적인 이론과 실습을 학습하였으며,
+                  프로젝트 중심 학습을 통해 실무 적용 능력을 키웠습니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        <section class="card section-card">
+          <div class="section-header">
+            <div class="icon">💼</div>
+            <h3>경험</h3>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-box">
+                <h4>ChatGPT 자바 프로그래밍 특강 이수</h4>
+                <div class="meta">2023년 8월</div>
+                <div class="desc">
+                  ChatGPT를 활용한 학습 방식으로 Java 프로그래밍의 기초부터 심화까지 익혔고,
+                  다양한 실습을 통해 문제 해결 능력과 구현 역량을 강화했습니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-header">
+            <div class="icon">🚀</div>
+            <h3>프로젝트</h3>
+          </div>
+          <div class="project-grid">
+            <div class="project-card">
+              <h4>네트워크 보안 실습</h4>
+              <span class="project-role">기획 및 개발</span>
+              <p>
+                네트워크 보안의 핵심 개념을 바탕으로 공격 및 방어 시나리오를 실습하며,
+                보안 사고 대응 능력과 로그 분석 역량을 강화했습니다.
+              </p>
+            </div>
+
+            <div class="project-card">
+              <h4>웹 애플리케이션 보안 강화</h4>
+              <span class="project-role">보안 분석 및 개선</span>
+              <p>
+                웹 애플리케이션의 주요 취약점을 분석하고 대응 방안을 적용하여,
+                서비스 안정성과 보안성을 높이는 경험을 쌓았습니다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-header">
+            <div class="icon">🛠️</div>
+            <h3>보유 기술</h3>
+          </div>
+          <div class="skills">
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">TCP/IP</span>
+            <span class="skill-pill">VPN</span>
+            <span class="skill-pill">Firewall</span>
+            <span class="skill-pill">IDS/IPS</span>
+            <span class="skill-pill">Git</span>
+            <span class="skill-pill">Linux</span>
+            <span class="skill-pill">SQL</span>
+            <span class="skill-pill">MySQL</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="footer-note">
+      © Resume of 신민준
+    </div>
+  </div>
 </body>
 </html>
